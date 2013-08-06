@@ -61,6 +61,9 @@ module Hashpasswd
     return pbkdf2 == testhash
   end
 
+  # Get the values of all constants
+  # @param none
+  # @return [Hash] of all constants
   def self.getconstants()
     return {:HASH_SECTIONS => HASH_SECTIONS, :ITERATIONS_INDEX => ITERATIONS_INDEX, :SALT_INDEX => SALT_INDEX, :HASH_INDEX => HASH_INDEX, :DEFAULT_DELIMETER => DEFAULT_DELIMETER}
   end
