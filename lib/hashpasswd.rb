@@ -25,15 +25,15 @@ module Hashpasswd
     @delimeter = options[:delimter] || ':'
     @digest = options[:digest] || 'SHA1'
 
-    salt = SecureRandom.base64( @salt_byte_size )
+    salt = SecureRandom.base64(@salt_byte_size)
     pbkdf2 = OpenSSL::PKCS5::pbkdf2_hmac(
       password,
       salt,
       @pbkdf2_iterations,
       @hash_byte_size,
       @digest
-    )
-    return [@digest, @pbkdf2_iterations, salt, Base64.encode64( pbkdf2 )].join( @delimeter )
+   )
+    return [@digest, @pbkdf2_iterations, salt, Base64.encode64(pbkdf2)].join(@delimeter)
   end
 
   # Validates a password against a hash
@@ -49,14 +49,14 @@ module Hashpasswd
     params = hash.split(@delimeter)
     return false if params.length != HASH_SECTIONS
 
-    pbkdf2 = Base64.decode64( params[HASH_INDEX] )
+    pbkdf2 = Base64.decode64(params[HASH_INDEX])
     testhash = OpenSSL::PKCS5::pbkdf2_hmac(
       password,
       params[SALT_INDEX],
       params[ITERATIONS_INDEX].to_i,
       pbkdf2.length,
       params[0] 
-    )
+   )
 
     return pbkdf2 == testhash
   end

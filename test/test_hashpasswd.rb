@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'securerandom'
 require './lib/hashpasswd'
 
 class HashpasswdTest < Test::Unit::TestCase
@@ -34,7 +35,7 @@ class HashpasswdTest < Test::Unit::TestCase
     assert(h1[Hashpasswd.getconstants[:SALT_INDEX]] != h2[Hashpasswd.getconstants[:SALT_INDEX]], "different salt")
   end
 
-  def test_multiple_passwords
+  def test_passwords_validate
     password=[]
     password[0] = "42+' x53q~16%vQ"
     password[1] = 'v,@8DDD>mwy%Io0'
@@ -57,7 +58,6 @@ class HashpasswdTest < Test::Unit::TestCase
       assert(Hashpasswd.validatepasswd(password[i], hash[i]) == true, "correct password")
       assert(Hashpasswd.validatepasswd(wrong_password, hash[i]) == false, "wrong password")
     end
-
   end
 
   def test_hash_difference
@@ -85,6 +85,48 @@ class HashpasswdTest < Test::Unit::TestCase
     
     for i in 0..(hash.length - 1) do
       assert(Hashpasswd.validatepasswd(password[i], hash[i]) == true, "password for hash[#{i}] validates") 
+      assert(Hashpasswd.validatepasswd(password[i], hash2[i]) == true, "password for hash2[#{i}] validates")
+      assert(hash[i] != hash2[i], "hash[#{i}] != hash2[#{i}]")
+    end
+  end
+
+  def test_random_passwords_validate
+    password = []
+    wrong_password = []
+    for i in 0..9 do
+      password[i] = SecureRandom.base64((i+1)*5)
+      wrong_password[i] = SecureRandom.base64((i+1)*5)
+    end
+
+    hash = []
+    for i in 0..(password.length - 1) do
+      hash[i] = Hashpasswd.createhash(password[i])
+    end
+
+    for i in 0..(hash.length - 1) do
+      assert(Hashpasswd.validatepasswd(password[i], hash[i]) == true, "correct password")
+      assert(Hashpasswd.validatepasswd(wrong_password[i], hash[i]) == false, "wrong password")
+    end
+  end
+
+  def test_random_hash_difference
+    password=[]
+    for i in 0..9 do
+      password[i] = SecureRandom.base64((i+1)*5)
+    end
+
+    hash = []
+    for i in 0..(password.length - 1) do
+      hash[i] = Hashpasswd.createhash(password[i])
+    end
+
+    hash2 = []
+    for i in 0..(password.length - 1) do
+      hash2[i] = Hashpasswd.createhash(password[i])
+    end
+
+    for i in 0..(hash.length - 1) do
+      assert(Hashpasswd.validatepasswd(password[i], hash[i]) == true, "password for hash[#{i}] validates")
       assert(Hashpasswd.validatepasswd(password[i], hash2[i]) == true, "password for hash2[#{i}] validates")
       assert(hash[i] != hash2[i], "hash[#{i}] != hash2[#{i}]")
     end
