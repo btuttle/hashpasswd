@@ -12,14 +12,16 @@ module Hashpasswd
   # @param password [String] A plain text password
   # @param [Hash{Symbol => String, Number}] options
   # @option options [Int] :pbkdf2_iterations (2000) The PBKDF2 iteration count
-  # @option options [Int] :salt_byte_size (24) The byte size for the salt
+  # @option options [Int] :salt_byte_size (24) The byte size for the salt (The salt should probably be at least 64 bits: http://en.wikipedia.org/wiki/PBKDF2)
   # @option options [Int] :hash_byte_size (24) The byte size for the hash
   # @option options [String] :delimiter (':') The delimeter for the hash string, changing the delimiter is not recommended as you will have to remember it and supply it as an option to validatepasswd()
   # @option options [String] :digest ('SHA1') The digest, can be any digest supported by OpenSSL on your sytem (eg 'SHA224', 'SHA256', 'SHA384' or 'SHA512')
   # @return [String] the hash as "<digest>:<pbkdf2_iterations>:<salt>:<hash>"
   #
   def self.createhash(password, options={})
+    #Needs to be increased as cpu speeds increase: http://en.wikipedia.org/wiki/PBKDF2
     @pbkdf2_iterations = options[:pbkdf2_iterations] || 2000
+    #The salt should probably be at least 64 bits: http://en.wikipedia.org/wiki/PBKDF2
     @salt_byte_size = options[:salt_byte_size] ||24
     @hash_byte_size = options[:hash_byte_size]|| 24
     @delimeter = options[:delimter] || ':'
