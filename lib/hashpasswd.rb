@@ -27,7 +27,7 @@ module Hashpasswd
     @delimeter = options[:delimter] || ':'
     @digest = options[:digest] || 'SHA1'
 
-    salt = SecureRandom.base64(@salt_byte_size)
+    salt = OpenSSL::Random.random_bytes(@salt_byte_size)
     pbkdf2 = OpenSSL::PKCS5::pbkdf2_hmac(
       password,
       salt,
